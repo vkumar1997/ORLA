@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>Streamer</title>
+</head>
+<body>
+    <img height="224" width="224" crossorigin="Anonymous" id="image" src="http://192.168.42.129:8080/shot.jpg"></img>
+    <canvas height="224" width="224" id="myctx"></canvas>
+    <script>
+        image = document.getElementById("image");
+        const WS_URL = 'ws://35.197.23.236:8765';
+        const FPS = 30;
+        const ws = new WebSocket(WS_URL);
+
+        image.onload=function()
+        {
+            try
+            {
+                const canvas = document.getElementById("myctx");
+                canvas.getContext('2d').drawImage(image,0,0,224,224);
+                data = canvas.toDataURL('image/png');
+                data = '5c9b81a40b31385f060516a5~1~'+data
+                ws.send(data);
+            }
+            catch(err){alert(err.message)}
+        };
+        
+        const getFrame = () => {
+            image.src = "http://192.168.43.1:8080/shot.jpg";
+        }
+       
+        ws.onopen = () => {
+            console.log(`Connected to ${WS_URL}`);
+            setInterval(() => {
+                getFrame();
+            }, 1000 / FPS);
+        }
+    </script>
+</body>
+</html>
